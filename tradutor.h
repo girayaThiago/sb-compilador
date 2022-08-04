@@ -32,11 +32,11 @@ enum class Estado : int
 
 class Command
 {
+
+public:
     std::string OPNAME;
     int OPCODE;
     int size;
-
-public:
     Estado e;
     Command()
     {
@@ -58,6 +58,39 @@ public:
         }
     }
 };
+
+static std::map<Symbol, std::string> symbolName = {
+    {Symbol::LABEL, "LABEL"},
+    {Symbol::OP_BEGIN, "OP_BEGIN"},
+    {Symbol::COMMENT, "COMMENT"},
+    {Symbol::EQU, "EQU"},
+    {Symbol::IF, "IF"},
+    {Symbol::SECAO_TEXTO, "SECAO_TEXTO"},
+    {Symbol::SECAO_DADOS, "SECAO_DADOS"},
+    {Symbol::EXTERN, "EXTERN"},
+    {Symbol::PUBLIC, "PUBLIC"},
+    {Symbol::ADD, "ADD"},
+    {Symbol::SUB, "SUB"},
+    {Symbol::MULT, "MULT"},
+    {Symbol::MUL, "MUL"},
+    {Symbol::DIV, "DIV"},
+    {Symbol::JMPN, "JMPN"},
+    {Symbol::JMPP, "JMPP"},
+    {Symbol::JMPZ, "JMPZ"},
+    {Symbol::JMP, "JMP"},
+    {Symbol::COPY, "COPY"},
+    {Symbol::LOAD, "LOAD"},
+    {Symbol::STORE, "STORE"},
+    {Symbol::INPUT, "INPUT"},
+    {Symbol::OUTPUT, "OUTPUT"},
+    {Symbol::STOP, "STOP"},
+    {Symbol::SPACE, "SPACE"},
+    {Symbol::CONST, "CONST"},
+    {Symbol::END, "END"},
+    {Symbol::NUMBER, "NUMBER"},
+    {Symbol::ID, "ID"},
+    {Symbol::COMMA, "COMMA"},
+    {Symbol::ERRO, "ERRO"}};
 
 static std::map<Symbol, std::string> patterns = {
     {Symbol::LABEL, "(^[a-zA-Z_][a-zA-Z0-9_]*: +)"},
@@ -87,7 +120,7 @@ static std::map<Symbol, std::string> patterns = {
     {Symbol::SPACE, "(SPACE$)"},
     {Symbol::CONST, "(CONST +)"},
     {Symbol::END, "(END$)"},
-    {Symbol::NUMBER, "(^[0-9]+$)"},
+    {Symbol::NUMBER, "(^-{0,1}[0-9]+$)"},
     {Symbol::ID, "([a-zA-Z_][a-zA-Z0-9_]* *)"},
     {Symbol::COMMA, "(, +)"},
     {Symbol::ERRO, "(.)"}};

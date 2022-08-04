@@ -10,7 +10,7 @@
 #include "token.h"
 #include "trim.cpp"
 using std::string;
-
+int errorCount = 0;
 class SymbolRecord
 {
 public:
@@ -77,6 +77,7 @@ void tokenize(std::pair<std::string, int> linha, std::vector<Token> &tokens)
         if ((int)token.first == 30)
         {
             std::cout << "\n";
+            errorCount++;
             std::cout << "Erro léxico " << linha.first << "\n";
         }
         tokens.push_back({token.first, token.second, linha.second});
@@ -115,6 +116,7 @@ void clearLabelStack(int posicao, bool definido, bool externo = false, bool publ
         else
         {
             std::stringstream ss;
+            errorCount++;
             ss << "Erro Semântico: Redefinição de " << l.token << "na linha: " << l.linha + 1 << "\n";
             std::cout << ss.str();
             // throw std::runtime_error();
@@ -388,6 +390,7 @@ std::vector<Token> firstPass(std::vector<std::pair<string, int>> &file)
         estado = transicoes[estado](tokens[i]);
         if (estado == Estado::Erro)
         {
+            errorCount++;
             std::cout << "Erro sintático na linha " << tokens[i].linha << "\n";
         }
     }
@@ -404,6 +407,40 @@ void printSymbolTable(bool onlyPublico = false)
             std::cout << v << "\n";
     }
 }
+
+std::vector<string> secondPass(std::vector<Token> tokens)
+{
+    // if (hasBegin)
+    // {
+    // }
+    std::cout << "second pass\n";
+    std::vector<string> processed;
+    for (auto t : tokens)
+    {
+        if (comandos.find(t.symbol) != comandos.end())
+        {
+            int code = comandos[t.symbol].OPCODE;
+            processed.push_back(std::to_string(code));
+        }
+        else if (tabelaSimbolo.find(t.token) != tabelaSimbolo.end())
+        {
+            if (tabelaSimbolo[t.token].definido)
+            {
+                processed.push_back(std::to_string(tabelaSimbolo[t.token].posicao));
+            }
+            else
+            {
+                processed.push_back("xx");
+            }
+        }
+        else
+        {
+            std::cout << "Token não definido: " << t.token << "na linha " << t.linha << std::endl;
+        }
+    }
+    return processed;
+}
+
 std::vector<string> traduzir(std::vector<std::pair<string, int>> &processed)
 {
     std::vector<string> traduzido;
@@ -411,21 +448,21 @@ std::vector<string> traduzir(std::vector<std::pair<string, int>> &processed)
     string token;
     string linha;
     std::vector<Token> tokens = firstPass(processed);
-    secondPass(tokens);
-    // printSymbolTable();
-    // std::cout << "-=-=-=-=-=-=--=-=-=-=-=-\n";
-    // printSymbolTable(true);
+    if (errorCount)
+    {
+        std::cout << "contagem de erros superior a 1 interrompendo execução antes da segunda passagem\n";
+        exit(-1);
+    }
+    traduzido = secondPass(tokens);
+    std::stringstream ss;
+    // escrever pro arquivo;
+    printSymbolTable();
+    std::cout << "-=-=-=-=-=-=--=-=-=-=-=-\n";
+    printSymbolTable(true);
+    for (auto num : traduzido)
+    {
+        ss << num << " ";
+    }
+    std::cout << ss.str();
     return traduzido;
-}
-
-std::vector<string> secondPass(std::vector<Token> tokens)
-{
-    if (hasBegin)
-    {
-    }
-    std::vector<string> processed;
-    for (auto t : tokens)
-    {
-        t.
-    }
 }
