@@ -90,8 +90,29 @@ int main(int argc, char const *argv[])
         return -1;
     }
     std::vector<std::pair<string, int>> processed = prepocessamento(file);
-    // IF -p ou -o cuspir arquivo preprocessado;
-    traduzir(processed);
+    if (flag[1] == 'p')
+    {
+        std::ofstream myfile;
+        myfile.open(output, std::ios::trunc);
+        for (auto par : processed)
+        {
+            myfile << par.first << "\n"; // realmente faltava pouco, mas as tabelas ainda estão meio incompletas
+        }
+    }
+    else
+    {
+        std::vector<string> traduzido = traduzir(processed);
+
+        std::ofstream myfile;
+        myfile.open(output);
+        std::stringstream ss;
+        for (auto num : traduzido)
+        {
+            ss << num << " "; // realmente faltava pouco, mas as tabelas ainda estão meio incompletas
+        }
+        // std::cout << ss.str();
+        myfile << ss.str();
+    }
     // for (auto l : processed)
     // {
     //     std::cout << l.first << " linha no arquivo original = " << l.second << "\n";

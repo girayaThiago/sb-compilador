@@ -426,16 +426,16 @@ std::vector<string> secondPass(std::vector<Token> tokens)
         {
             if (tabelaSimbolo[t.token].definido)
             {
-                processed.push_back(std::to_string(tabelaSimbolo[t.token].posicao));
+                processed.push_back(std::to_string(tabelaSimbolo[t.token].posicao) + "r");
             }
-            else
+            else if (tabelaSimbolo[t.token].externo)
             {
-                processed.push_back("xx");
+                processed.push_back("xxr");
             }
         }
         else
         {
-            std::cout << "Token não definido: " << t.token << "na linha " << t.linha << std::endl;
+            std::cout << "Erro Semântico: Token não definido: " << t.token << "na linha " << t.linha << std::endl;
         }
     }
     return processed;
@@ -454,15 +454,10 @@ std::vector<string> traduzir(std::vector<std::pair<string, int>> &processed)
         exit(-1);
     }
     traduzido = secondPass(tokens);
-    std::stringstream ss;
     // escrever pro arquivo;
     printSymbolTable();
     std::cout << "-=-=-=-=-=-=--=-=-=-=-=-\n";
     printSymbolTable(true);
-    for (auto num : traduzido)
-    {
-        ss << num << " ";
-    }
-    std::cout << ss.str();
+
     return traduzido;
 }
