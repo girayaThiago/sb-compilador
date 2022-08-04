@@ -31,44 +31,70 @@ using std::string;
 
 // std::unordered_map<string, void(*)(const string&)> mdt;
 
-string toUpper(string s) {
+string toUpper(string s)
+{
     string upper = "";
-    for (int i = 0; i < s.size(); i++) {
+    for (int i = 0; i < s.size(); i++)
+    {
         char c = s[i];
-        if (c >= 'a' && c <= 'z') c -= 32;
+        if (c >= 'a' && c <= 'z')
+            c -= 32;
         upper += c;
     }
     return upper;
 }
 
-int main(int argc, char const* argv[]) {
+std::map<string, string> flags = {
+    {"preprocess", "(-p|-P)"},
+    {"translate", "(-o|-O)"},
+    {"file", "([a-zA-Z0-9_]*.asm)"}
+
+};
+
+int main(int argc, char const *argv[])
+{
     std::vector<string> file;
     Estado e = Estado::Inicial;
-
-    std::ifstream fs("./bin.asm");
-    //lê o arquivo todo e armazena num array, linha a linha;
-    // TODO: ler uma label e a linha de uma só vez, bem como ler uma label e o código que pode estar na próxima linha;
-    if (fs.good()) {
+    char const *flag = nullptr;
+    char const *input = nullptr;
+    char const *output = nullptr;
+    if (argc >= 4)
+    {
+        flag = argv[1];
+        input = argv[2];
+        output = argv[3];
+    }
+    if (!flag || !input || !output)
+    {
+        throw std::logic_error("Você deve informar a flag e os arquivos de saída -o|-p input.asm output.asm");
+    }
+    std::ifstream fs(input);
+    // lê o arquivo todo e armazena num array, linha a linha;
+    //  TODO: ler uma label e a linha de uma só vez, bem como ler uma label e o código que pode estar na próxima linha;
+    if (fs.good())
+    {
         string linha;
         string palavra;
         int contador_linha = 0;
         int contador_posicao = 0;
-        while (std::getline(fs, linha)) {
+        while (std::getline(fs, linha))
+        {
             contador_linha++;
             linha = toUpper(linha);
             file.push_back(linha);
         }
-    } else {
+    }
+    else
+    {
         std::cout << "Erro ao abrir o arquivo\n";
         return -1;
     }
     std::vector<std::pair<string, int>> processed = prepocessamento(file);
     // IF -p ou -o cuspir arquivo preprocessado;
     traduzir(processed);
-    // for (auto l : processed) {
+    // for (auto l : processed)
+    // {
     //     std::cout << l.first << " linha no arquivo original = " << l.second << "\n";
     // }
     return 0;
 }
-
-

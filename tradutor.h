@@ -7,6 +7,7 @@
 #include <map>
 #include <stdexcept>
 #include <string>
+#include "token.h"
 
 enum class Estado : int
 {
@@ -14,6 +15,7 @@ enum class Estado : int
     SecaoT,
     ComandosT,
     Read2,
+    ReadCOMMA,
     Read1,
     Stop,
     SecaoD,
@@ -57,70 +59,37 @@ public:
     }
 };
 
-enum class Symbol : int
-{
-    OP_BEGIN,
-    LABEL,
-    COMMENT,
-    EQU,
-    IF,
-    SECAO_TEXTO,
-    SECAO_DADOS,
-    EXTERN,
-    PUBLIC,
-    ADD,
-    SUB,
-    MULT,
-    MUL,
-    DIV,
-    JMPN,
-    JMPP,
-    JMPZ,
-    JMP,
-    COPY,
-    LOAD,
-    STORE,
-    INPUT,
-    OUTPUT,
-    STOP,
-    SPACE,
-    CONST,
-    END,
-    ID,
-    NUMBER,
-    ERRO
-};
-
 static std::map<Symbol, std::string> patterns = {
+    {Symbol::LABEL, "(^[a-zA-Z_][a-zA-Z0-9_]*: +)"},
     {Symbol::OP_BEGIN, "(BEGIN)"},
-    {Symbol::LABEL, "([a-zA-Z_][a-zA-Z0-9_]*[\\:])"},
     {Symbol::COMMENT, "(;.*)"},
-    {Symbol::EQU, "(EQU )"},
-    {Symbol::IF, "(IF )"},
+    {Symbol::EQU, "(EQU +)"},
+    {Symbol::IF, "(IF +)"},
     {Symbol::SECAO_TEXTO, "(SECAO TEXTO$)"},
     {Symbol::SECAO_DADOS, "(SECAO DADOS$)"},
-    {Symbol::EXTERN, "(EXTERN )"},
-    {Symbol::PUBLIC, "(PUBLIC )"},
-    {Symbol::ADD, "(ADD )"},
-    {Symbol::SUB, "(SUB )"},
-    {Symbol::MULT, "(MULT )"},
-    {Symbol::MUL, "(MUL )"},
-    {Symbol::DIV, "(DIV )"},
-    {Symbol::JMPN, "(JMPN )"},
-    {Symbol::JMPP, "(JMPP )"},
-    {Symbol::JMPZ, "(JMPZ )"},
-    {Symbol::JMP, "(JMP )"},
-    {Symbol::COPY, "(COPY )"},
-    {Symbol::LOAD, "(LOAD )"},
-    {Symbol::STORE, "(STORE )"},
-    {Symbol::INPUT, "(INPUT )"},
-    {Symbol::OUTPUT, "(OUTPUT )"},
+    {Symbol::EXTERN, "(EXTERN$)"},
+    {Symbol::PUBLIC, "(^PUBLIC +)"},
+    {Symbol::ADD, "(ADD +)"},
+    {Symbol::SUB, "(SUB +)"},
+    {Symbol::MULT, "(MULT +)"},
+    {Symbol::MUL, "(MUL +)"},
+    {Symbol::DIV, "(DIV +)"},
+    {Symbol::JMPN, "(JMPN +)"},
+    {Symbol::JMPP, "(JMPP +)"},
+    {Symbol::JMPZ, "(JMPZ +)"},
+    {Symbol::JMP, "(JMP +)"},
+    {Symbol::COPY, "(COPY +)"},
+    {Symbol::LOAD, "(LOAD +)"},
+    {Symbol::STORE, "(STORE +)"},
+    {Symbol::INPUT, "(INPUT +)"},
+    {Symbol::OUTPUT, "(OUTPUT +)"},
     {Symbol::STOP, "(STOP$)"},
     {Symbol::SPACE, "(SPACE$)"},
-    {Symbol::CONST, "(CONST )"},
+    {Symbol::CONST, "(CONST +)"},
     {Symbol::END, "(END$)"},
-    {Symbol::ID, "([a-zA-Z_][a-zA-Z0-9_]*)"},
-    {Symbol::NUMBER, "([0-9]+)"},
+    {Symbol::NUMBER, "(^[0-9]+$)"},
+    {Symbol::ID, "([a-zA-Z_][a-zA-Z0-9_]* *)"},
+    {Symbol::COMMA, "(, +)"},
     {Symbol::ERRO, "(.)"}};
 
 static std::unordered_map<Symbol, Command> comandos = {
@@ -154,8 +123,12 @@ static std::unordered_map<Estado, std::string> statenames = {
     {Estado::Erro, "Erro Léxico"},
     {Estado::Fim, "Fim"},
     {Estado::LabelT, "LabelT: Empilhando Labels SECAO_TEXTO"},
-    {Estado::LabelD, "LabelD: Empilhando Labels SECAO_DADOS"}};
+    {Estado::LabelD, "LabelD: Empilhando Labels SECAO_DADOS"},
+    {Estado::TabelaSD, "TabelaSD"},
+
+};
 
 std::vector<std::string> traduzir(std::vector<std::pair<std::string, int>> &processed);
+// void tokenize(std::pair<std::string, int> linha, std::vector<Token> &tokens);
 
 #endif
